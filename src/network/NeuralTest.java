@@ -119,7 +119,7 @@ public class NeuralTest {
 			}
 			p.singleTrain(learnRate, new double[] {anyX, anyY}, desiredOutput);
 		}
-		System.out.println("Finished training with wx = " + p.getWeigths()[0] + "; wy = " + p.getWeigths()[1] + "; bias = " + p.getBias());
+		System.out.println("Finished training with wx = " + p.getWeights()[0] + "; wy = " + p.getWeights()[1] + "; bias = " + p.getBias());
 		
 		/** Calcular tabla de aciertos
 		 * 

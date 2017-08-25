@@ -1,13 +1,17 @@
 package network;
 
 import network.utils;
-
+/**
+ * Neurona con funcion de activacion sigmoidea.
+ * @author vichoko
+ *
+ */
 public class Neuron {
 	public double getBias() {
 		return bias;
 	}
 
-	public double[] getWeigths() {
+	public double[] getWeights() {
 		return this.weights;
 	}
 
@@ -23,19 +27,24 @@ public class Neuron {
 		this.weights = weights;
 	}
 	
-	public Neuron(double bias, double[] weigths, double threshold){
-		this(bias, weigths);
+	public Neuron(double bias, double[] weights, double threshold){
+		this(bias, weights);
 		this.threshold = threshold;
 	}
 
 	
-	
+	/**
+	 * Pondera las entradas mediante la funcion de activación y se ajusta con 'bias'.
+	 * @param inputs
+	 * @return
+	 * @throws Exception
+	 */
 	public double synapsis(double[] inputs) throws Exception{
 		lastOutput = utils.sigmoid(utils.dotProduct(this.weights, inputs) + bias); 
 		return lastOutput;
 	}
 	
-/** BINARY CLASSIFICATOR FEATURE*/
+/** CLASIFICADOR MONO NEURONA */
 	public int binarySynapsis(double[] inputs) throws Exception{
 		double val = synapsis(inputs);
 		if (val > threshold)
@@ -44,10 +53,17 @@ public class Neuron {
 	}
 	
 	
-	enum E_feedType {POSITIVE, NEGATIVE};	
-	void singleFeed(double learnRate, double[] inputs, E_feedType type) throws Exception {
+	enum E_feedType {POSITIVE, NEGATIVE};
+	/**
+	 * Ajusta los pesos en un contexto de clasificador mono neurona.
+	 * @param learnRate
+	 * @param inputs
+	 * @param type
+	 * @throws Exception
+	 */
+	void adjustWeights(double learnRate, double[] inputs, E_feedType type) throws Exception {
 		if (this.weights.length != inputs.length) {
-			throw new Exception("weigth and inputs vectors have different lengths.");
+			throw new Exception("weight and inputs vectors have different lengths.");
 		}
 		
 		if (type == E_feedType.POSITIVE) {
@@ -60,7 +76,13 @@ public class Neuron {
 			}
 		}
 	}
-	
+	/** 
+	 * Utilizado al instanciar una sola neurona y utilizarla como clasificador.
+	 * @param learnRate
+	 * @param inputs
+	 * @param desiredOutput
+	 * @throws Exception
+	 */
 	public void singleTrain(double learnRate, double[] inputs, int desiredOutput) throws Exception {
 		if (desiredOutput<0 || desiredOutput>1) {
 			throw new Exception("Output must be binary");
@@ -69,10 +91,10 @@ public class Neuron {
 		if (output != desiredOutput) {
 			if (desiredOutput == 0) {
 				// Disminuir pesos
-				singleFeed(learnRate, inputs, E_feedType.NEGATIVE);
+				adjustWeights(learnRate, inputs, E_feedType.NEGATIVE);
 				} else {
 				// Aumentar pesos
-				singleFeed(learnRate, inputs, E_feedType.POSITIVE);
+				adjustWeights(learnRate, inputs, E_feedType.POSITIVE);
 			}
 		}
 		

@@ -1,28 +1,46 @@
 package network;
 
 import java.util.ArrayList;
-
+/**
+ * Red neuronal implementada mediante neuronas con funcion de activacion sigmoidea.
+ * Las neuronas se inicializan con pesos y bias aleatorios entre 0 y 1.
+ * 
+ * @author vichoko
+ *
+ */
 public class NeuralNetwork {
 	ArrayList<NeuralLayer> layers = new ArrayList<>();
 	boolean isComplete = false;
 	double learningRate = 0.1	;
 	/** CONSTRUCCION */
 	public NeuralNetwork() {	
-		// Red vacia, learning rate	
+		// Red vacia, learning rate	fijo
 	}
-	
+	/**
+	 * Inicia red vacia con tasa de aprendizaje explicita.
+	 * @param learningRate Tasa de aprendizaje de las neuronas
+	 */
 	public NeuralNetwork(double learningRate) {	
 		// Red vacia
 		this.learningRate = learningRate;
 	}
 
+	/** Crea capa de entrada
+	 * @param inputSize Cantidad de entradas
+	 * @param numberOfNeurons Cantidad de neuronas
+	 * @throws Exception En caso de agregar mas de una capa de entrada
+	 */
 	public void newInputLayer(int inputSize, int numberOfNeurons) throws Exception {
 		if (layers.size() > 0) {
 			throw new Exception("Tried adding more than one input layer");
 		}
 		layers.add(new NeuralLayer(numberOfNeurons, inputSize));
 	}
-	
+	/**
+	 * Crea capa escondida o de salida (si se llama closeNetork despues)
+	 * @param numberOfNeurons Numero de neuronas que tendra la capa
+	 * @throws Exception
+	 */
 	public void newHiddenLayer(int numberOfNeurons) throws Exception {
 		if (layers.size() == 0) {
 			throw new Exception("Tried adding hidden layer without input layer");
@@ -32,7 +50,11 @@ public class NeuralNetwork {
 		NeuralLayer previousLayer = layers.get(layers.size()-1);
 		layers.add(new NeuralLayer(numberOfNeurons, previousLayer.getOutputSize()));
 	}
-	
+	/**
+	 * Transforma ultima capa oculta/entrada en capa de salida.
+	 * Cierra la red neuronal a modificaciones topologicas.
+	 * @throws Exception en caso de cerrar dos veces o si se llama antes de crear capa de entrada.
+	 */
 	public void closeNetwork() throws Exception {
 		/** Transforma la ultima capa en Output Layer y cierra red a modificaicones*/
 		if (layers.size() == 0) {
@@ -43,6 +65,15 @@ public class NeuralNetwork {
 		isComplete = true;
 	}
 	/** METODOS PUBLICOS */
+	/**
+	 * Entrena la red neuronal con el conjunto de entrenamiento entregado en input y expectedOutput.
+	 * La cantidad de elementos de input y expectedOutput deben coincidir.
+	 *  
+	 * @param input Entradas a la red neuronal, debe coincidir su cantidad con numero de entradas de la capa de entrada.
+	 * @param expectedOutput Salidas esperadas de la red neuronal. Su cantidad debe coincidir con la cantidad de neuronas de la capa de salida.
+	 * @param nEpochs Cantidad de veces que se entrenara con el data set entregado.
+	 * @throws Exception En caso de detectar inconsistencias entre input y expectedOutput.
+	 */
 	public void train(double[][] input, double[][] expectedOutput, int nEpochs) throws Exception {
 		// recibe dataset de entrenamiento; varios input con sus respectivos output
 		if (input.length != expectedOutput.length) {
@@ -69,7 +100,24 @@ public class NeuralNetwork {
 			System.out.println("Epoch: "+epochIndex+", learnRate: "+learningRate+", error: "+sumError);	
 		}
 		}
+	/**
+	 * Obtener prediccion de la red neuronal, dado una entrada particular.
+	 * @param input Entrada que se desea hacer una prediccion.
+	 * @return Salida predecida por la red neuronal. Valores entre 0 y 1. Su dimension coincide con la capa de salida.
+	 * @throws Exception
+	 */
+	public double[] predict(double[] input) throws Exception {
+		return forwardFeed(input);
+	}
 	
+	/**
+	 * Obtener prediccion de la red neuronal, obteniendo valores 0 o 1. Al pasar la prediccion real por umbral explicitado.
+	 *
+	 * @param input Entrada que se desea hacer una prediccion.
+	 * @param threshold Umbral desde el cual se considerara la clase como 1. De lo contrario 0.
+	 * @return Salida predecida, obteniendo valores 0 o 1.
+	 * @throws Exception
+	 */
 	public int[] binaryPredict(double[] input, double threshold) throws Exception {
 		int[] res = new int[forwardFeed(input).length];
 		int index = 0;
@@ -79,11 +127,10 @@ public class NeuralNetwork {
 		return res;
 	}
 	
-	public double[] predict(double[] input) throws Exception {
-		return forwardFeed(input);
-	}
 	
-	/** METODOS PRIVADOS */
+	/** METODOS (PRIVADOS) DE APRENDIZAJE MEDIANTE BACK PROPAGATION */
+	
+
 	double[] forwardFeed(double[] food) throws Exception {
 		for (NeuralLayer layer : layers) {
 			food = layer.synapsis(food);
