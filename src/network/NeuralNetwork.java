@@ -42,63 +42,7 @@ public class NeuralNetwork {
 		}
 		isComplete = true;
 	}
-
-	/** METODOS */
-	public double[] forwardFeed(double[] food) throws Exception {
-		for (NeuralLayer layer : layers) {
-			food = layer.synapsis(food);
-		}
-		return food;
-	}
-	
-	public void backPropagation(double[] expectedOutput) {
-		for (int layerIndex = layers.size() - 1; layerIndex > 0; layerIndex--) {
-			// backward iteration
-			NeuralLayer layer = layers.get(layerIndex);
-			if (layerIndex == layers.size() - 1) {
-				// Caso capa de salida
-				int neuronIndex = 0;
-				for (Neuron neuron : layer.neurons) {
-					neuron.delta = (expectedOutput[neuronIndex++] - neuron.lastOutput)*
-							utils.transferDerivative(neuron.lastOutput);
-				}
-			} else {
-				// caso capa escondida o de entrada
-				for (int neuronIndex = 0; neuronIndex < layer.neurons.length; neuronIndex++) {
-					Neuron neuron = layer.neurons[neuronIndex];
-					double error = 0;
-					for (Neuron neighborNeuron : layers.get(layerIndex+1).neurons) {
-						error += (neighborNeuron.weights[neuronIndex]*neighborNeuron.delta);
-					}
-					neuron.delta = error*utils.transferDerivative(neuron.lastOutput);
-					
-				}
-				
-			}
-			
-		}
-	}
-	
-	public void updateWeights(double[] input) throws Exception {
-		for (int layerIndex = 0; layerIndex < this.layers.size(); layerIndex++) {
-			NeuralLayer layer = layers.get(layerIndex);
-			if (layerIndex > 0) {
-				// Si no es input layer, los input vienen de layers previas
-				input = layers.get(layerIndex-1).getPastOutputs();
-			}
-			for (Neuron neuron : layer.neurons) {
-				// se actualiza su peso
-				if (input.length != neuron.weights.length) {
-					throw new Exception("updateWeights :: input and weight size incoherence");
-				}
-				for (int inputIndex = 0; inputIndex < input.length; inputIndex++) {
-					neuron.weights[inputIndex] += this.learningRate*neuron.delta*input[inputIndex];
-				}
-				
-			}
-		}
-	}
-		
+	/** METODOS PUBLICOS */
 	public void train(double[][] input, double[][] expectedOutput, int nEpochs) throws Exception {
 		// recibe dataset de entrenamiento; varios input con sus respectivos output
 		if (input.length != expectedOutput.length) {
@@ -134,6 +78,68 @@ public class NeuralNetwork {
 		}
 		return res;
 	}
+	
+	public double[] predict(double[] input) throws Exception {
+		return forwardFeed(input);
+	}
+	
+	/** METODOS PRIVADOS */
+	double[] forwardFeed(double[] food) throws Exception {
+		for (NeuralLayer layer : layers) {
+			food = layer.synapsis(food);
+		}
+		return food;
+	}
+	
+	void backPropagation(double[] expectedOutput) {
+		for (int layerIndex = layers.size() - 1; layerIndex > 0; layerIndex--) {
+			// backward iteration
+			NeuralLayer layer = layers.get(layerIndex);
+			if (layerIndex == layers.size() - 1) {
+				// Caso capa de salida
+				int neuronIndex = 0;
+				for (Neuron neuron : layer.neurons) {
+					neuron.delta = (expectedOutput[neuronIndex++] - neuron.lastOutput)*
+							utils.transferDerivative(neuron.lastOutput);
+				}
+			} else {
+				// caso capa escondida o de entrada
+				for (int neuronIndex = 0; neuronIndex < layer.neurons.length; neuronIndex++) {
+					Neuron neuron = layer.neurons[neuronIndex];
+					double error = 0;
+					for (Neuron neighborNeuron : layers.get(layerIndex+1).neurons) {
+						error += (neighborNeuron.weights[neuronIndex]*neighborNeuron.delta);
+					}
+					neuron.delta = error*utils.transferDerivative(neuron.lastOutput);
+					
+				}
+				
+			}
+			
+		}
+	}
+	
+	void updateWeights(double[] input) throws Exception {
+		for (int layerIndex = 0; layerIndex < this.layers.size(); layerIndex++) {
+			NeuralLayer layer = layers.get(layerIndex);
+			if (layerIndex > 0) {
+				// Si no es input layer, los input vienen de layers previas
+				input = layers.get(layerIndex-1).getPastOutputs();
+			}
+			for (Neuron neuron : layer.neurons) {
+				// se actualiza su peso
+				if (input.length != neuron.weights.length) {
+					throw new Exception("updateWeights :: input and weight size incoherence");
+				}
+				for (int inputIndex = 0; inputIndex < input.length; inputIndex++) {
+					neuron.weights[inputIndex] += this.learningRate*neuron.delta*input[inputIndex];
+				}
+				
+			}
+		}
+	}
+		
+
 	
 	
 }
