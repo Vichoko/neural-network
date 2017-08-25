@@ -23,7 +23,7 @@ Implementación de red neuronal escrita en Java.
 ```
 
 ### Entrenar
-	```Java
+```Java
 	public void train(double[][] input, double[][] expectedOutput, int nEpochs) throws Exception {...} /** input y expectedOutput deben tener la misma cantidad de elementos, 
 	nEpochs es la cantidad de veces que se entrenara con el dataSet.*/
 
