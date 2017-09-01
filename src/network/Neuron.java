@@ -1,6 +1,6 @@
 package network;
 
-import network.utils;
+import util.utils;
 /**
  * Neurona con funcion de activacion sigmoidea.
  * @author vichoko

@@ -3,9 +3,12 @@ package network;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import util.utils;
 
 public class LayerNetworkTest {
 
@@ -24,6 +27,19 @@ public class LayerNetworkTest {
 		bigger.closeNetwork();
 		
 	}
+	@Test
+	public void LayerTest() throws Exception {
+		NeuralLayer first = new NeuralLayer(1,1);
+		NeuralLayer second = new NeuralLayer(2,2);
+		assertEquals(first.getOutputSize(), 1);
+		assertEquals(second.getOutputSize(), 2);
+		double[] fres = first.synapsis(new double[] {1});
+		double[] sres = second.synapsis(new double[] {2, 3});
+		assertEquals(first.getPastOutputs().length, first.getOutputSize());
+		assertEquals(second.getPastOutputs().length, second.getOutputSize());
+		assertEquals(first.getPastOutputs(), fres);
+		assertEquals(second.getPastOutputs(), sres);
+		}
 
 	@Test
 	public void NetworkTest() throws Exception {
@@ -32,42 +48,29 @@ public class LayerNetworkTest {
 		bigger.backPropagation(new double[] {1,2,3,4,5,6,7,8,9,10});
 		little.backPropagation(new double[] {1});
 	}
-	@Test
-	public void NetworkXORLearningTest() throws Exception{
+	
+	
+	public void NetworkLogicGateTest(double[][] input, double[][] expectedOutput, String gateName, boolean verbose) throws Exception {
 		NeuralNetwork net = new NeuralNetwork(0.1);
-		net.newInputLayer(2, 2);
-		net.newHiddenLayer(3);
+		net.newInputLayer(2, 3);
+		net.newHiddenLayer(4);
 		net.newHiddenLayer(1);
 		net.closeNetwork();
-		
 		/** Red con 2 neuronas de entrada, 2 escondidas y una de salida, generada con pesos aleatorios, para aprender XOR.
-		 * Clases binarias: 1 si las bit_1 XOR bit_2 == 1; 0 si no.*/
+		 * Clases binarias: 
+		 * 	1, si bit_1 <GATE> bit_2 == 1; 
+		 * 	0 si no.*/
 		
-		// Pocas combinaciones posibles, mas enfasis al numero de epochs 
-		double[][] input = new double[4][2];
-		double[][] expectedOutput = new double[4][1];
-
+		if (verbose) {
+			System.out.println();
+			System.out.println(gateName + " neural network training test.");
+		}
+		net.train(input, expectedOutput, 1000000, gateName);
 		
-		input[0] = new double[] {0,0};
-		input[1] = new double[] {0,1};
-		input[2] = new double[] {1,0};
-		input[3] = new double[] {1,1};
-
-		expectedOutput[0] = new double[] {0};
-		expectedOutput[1] = new double[] {1};
-		expectedOutput[2] = new double[] {1};
-		expectedOutput[3] = new double[] {0};
-		
-		net.train(input, expectedOutput, 3000000);
-		
-		/** Calcular tabla de aciertos
-		 * 
-		 * verdaero = 1; falso = 0 */
-		int verdaderosPositivos = 0;
-		int verdaderosNegativos = 0;
-		int falsosPositivos = 0;
-		int falsosNegativos = 0;
+		// preparar datos de prueba
 		int casosTotales = 300000;
+		double[][] testInput = new double[casosTotales][];
+		double[][] testOutput = new double[casosTotales][];
 		for (int i = 0; i < casosTotales; i++) {
 			double seed = Math.random();
 			int randomIndex;
@@ -79,42 +82,87 @@ public class LayerNetworkTest {
 				randomIndex = 2;
 			else
 				randomIndex = 3;
-			
-			int[] realOutput = net.binaryPredict(input[randomIndex], 0.5);
-			// expected class is 0
-			if (expectedOutput[randomIndex][0] == 0 && 0 == realOutput[0]) 
-				verdaderosNegativos++;
-			else if (expectedOutput[randomIndex][0] == 0 && 1 == realOutput[0]) 
-				falsosNegativos++;
-			else if (expectedOutput[randomIndex][0] == 1 && 1 == realOutput[0])
-				verdaderosPositivos++;
-			else if (expectedOutput[randomIndex][0] == 1 && 0 == realOutput[0])
-				falsosPositivos++;
-			else
-				System.out.println("expected is "+expectedOutput[i][0]+" real is "+realOutput[0]);
-					
+			testInput[i] = input[randomIndex];
+			testOutput[i] = expectedOutput[randomIndex];
 		}
 		
-		System.out.println("Numero de experimentos: " + casosTotales);
-		System.out.println("Verdaderos Positivos: " + verdaderosPositivos);
-		System.out.println("Verdaderos Negativos: " + verdaderosNegativos);
-		System.out.println("Falsos Positivos: " + falsosPositivos);
-		System.out.println("Falsos Negativos: " + falsosNegativos);
-		double tasaAciertos = (verdaderosPositivos + verdaderosNegativos)*1.0/casosTotales;
-		double tasaDesaciertos = (falsosPositivos + falsosNegativos)*1.0/casosTotales;
-		System.out.println("Tasa aciertos: " + tasaAciertos + "; tasa desaciertos: " + tasaDesaciertos);
-		assertTrue(tasaAciertos > 0.70);
-		assertTrue(tasaDesaciertos < 0.20);
+		double threshold = 0.5;
+		HashMap<String, Double> metricsData = 
+				utils.binaryMetrics(net, testInput, testOutput, threshold, verbose);
+			
+		assertTrue(metricsData.get("tasa_aciertos") > 0.70);
+		assertTrue(metricsData.get("tasa_desaciertos") < 0.20);
+	}
+	
+	
+	@Test
+	public void NetworkXORLearningTest() throws Exception{		
+		// Pocas combinaciones posibles, mas enfasis al numero de epochs 
+		double[][] input = new double[4][2];
+		double[][] expectedOutput = new double[4][1];
 
+		input[0] = new double[] {0,0};
+		input[1] = new double[] {0,1};
+		input[2] = new double[] {1,0};
+		input[3] = new double[] {1,1};
+
+		expectedOutput[0] = new double[] {0};
+		expectedOutput[1] = new double[] {1};
+		expectedOutput[2] = new double[] {1};
+		expectedOutput[3] = new double[] {0};
 		
+		boolean verbose = true;
+		NetworkLogicGateTest(input, expectedOutput, "XOR", verbose);
+		
+	}
+	@Test
+	public void NetworkANDLearningTest() throws Exception{		
+		// Pocas combinaciones posibles, mas enfasis al numero de epochs 
+		double[][] input = new double[4][2];
+		double[][] expectedOutput = new double[4][1];
+
+		input[0] = new double[] {0,0};
+		input[1] = new double[] {0,1};
+		input[2] = new double[] {1,0};
+		input[3] = new double[] {1,1};
+
+		expectedOutput[0] = new double[] {0};
+		expectedOutput[1] = new double[] {0};
+		expectedOutput[2] = new double[] {0};
+		expectedOutput[3] = new double[] {1};
+		
+		boolean verbose = true;
+		NetworkLogicGateTest(input, expectedOutput, "AND", verbose);
+		
+	}
+	@Test
+	public void NetworkORLearningTest() throws Exception{		
+		// Pocas combinaciones posibles, mas enfasis al numero de epochs 
+		double[][] input = new double[4][2];
+		double[][] expectedOutput = new double[4][1];
+
+		input[0] = new double[] {0,0};
+		input[1] = new double[] {0,1};
+		input[2] = new double[] {1,0};
+		input[3] = new double[] {1,1};
+
+		expectedOutput[0] = new double[] {0};
+		expectedOutput[1] = new double[] {1};
+		expectedOutput[2] = new double[] {1};
+		expectedOutput[3] = new double[] {1};
+		
+		boolean verbose = true;
+		NetworkLogicGateTest(input, expectedOutput, "OR", verbose);
 		
 	}
 	
+	
 	@Test
 	public void NetworkLinearFunctionLearningTest() throws Exception {
+		boolean verbose = true;
 		NeuralNetwork net = new NeuralNetwork(0.2);
 		net.newInputLayer(2, 2);
-		net.newHiddenLayer(2);
+		net.newHiddenLayer(3);
 		net.newHiddenLayer(1);
 		net.closeNetwork();
 		/** Red con 2 neuronas de entrada, 2 escondidas y una de salida, generada con pesos aleatorios, para aprender una función linear.
@@ -131,66 +179,34 @@ public class LayerNetworkTest {
 			input[i] = new double[] {Math.random()*100-50, Math.random()*100-50};
 			expectedOutput[i] = new double[] {NeuralTest.abovenrightFunction(input[i][0], input[i][1]) ? 1 : 0};						
 		}
+		// normalizar valores de entrada
+		input = utils.normalize(input, -50, 50);
 		
+		if (verbose) {
+			System.out.println();
+			System.out.println("Linear Function neural network training test.");
+		}
 		// entrenar con mitad
-		
-		
 		net.train(Arrays.copyOfRange(input, 1, (int)Math.floor(dataSetSize/2)), 
 				Arrays.copyOfRange(expectedOutput, 1, (int)Math.floor(dataSetSize/2)), 
-				5000);
+				5000,
+				"DIAG");
 		
 		// evaluar con otra mitad disjunta
-		/** Calcular tabla de aciertos
-		 * 
-		 * verdaero = 1; falso = 0 */
-		int verdaderosPositivos = 0;
-		int verdaderosNegativos = 0;
-		int falsosPositivos = 0;
-		int falsosNegativos = 0;
-		int casosTotales = dataSetSize - ((int)Math.floor(dataSetSize/2) + 1);
-		for (int i = (int)Math.floor(dataSetSize/2) + 1; i < dataSetSize; i++) {
-			int[] realOutput = net.binaryPredict(input[i], 0.5);
-			// expected class is 0
-			if (expectedOutput[i][0] == 0 && 0 == realOutput[0]) 
-				verdaderosNegativos++;
-			else if (expectedOutput[i][0] == 0 && 1 == realOutput[0]) 
-				falsosNegativos++;
-			else if (expectedOutput[i][0] == 1 && 1 == realOutput[0])
-				verdaderosPositivos++;
-			else if (expectedOutput[i][0] == 1 && 0 == realOutput[0])
-				falsosPositivos++;
-			else
-				System.out.println("expected is "+expectedOutput[i][0]+" real is "+realOutput[0]);
-		}
-		
-		System.out.println("Numero de experimentos: " + casosTotales);
-		System.out.println("Verdaderos Positivos: " + verdaderosPositivos);
-		System.out.println("Verdaderos Negativos: " + verdaderosNegativos);
-		System.out.println("Falsos Positivos: " + falsosPositivos);
-		System.out.println("Falsos Negativos: " + falsosNegativos);
-		double tasaAciertos = (verdaderosPositivos + verdaderosNegativos)*1.0/casosTotales;
-		double tasaDesaciertos = (falsosPositivos + falsosNegativos)*1.0/casosTotales;
-		System.out.println("Tasa aciertos: " + tasaAciertos + "; tasa desaciertos: " + tasaDesaciertos);
-		assertTrue(tasaAciertos > 0.70);
-		assertTrue(tasaDesaciertos < 0.20);
-	
-		
-				
-		
-		
+		double threshold = 0.5;
+		HashMap<String, Double> metricsData = utils.binaryMetrics(net, 
+				Arrays.copyOfRange(input, 
+						(int)Math.floor(dataSetSize/2) + 1, 
+						dataSetSize - 1), 
+				Arrays.copyOfRange(expectedOutput, 
+						(int)Math.floor(dataSetSize/2) + 1, 
+						dataSetSize - 1), 
+				threshold,
+				verbose);
+
+		assertTrue(metricsData.get("tasa_aciertos") > 0.70);
+		assertTrue(metricsData.get("tasa_desaciertos") < 0.20);		
 	}
-	@Test
-	public void LayerTest() throws Exception {
-		NeuralLayer first = new NeuralLayer(1,1);
-		NeuralLayer second = new NeuralLayer(2,2);
-		assertEquals(first.getOutputSize(), 1);
-		assertEquals(second.getOutputSize(), 2);
-		double[] fres = first.synapsis(new double[] {1});
-		double[] sres = second.synapsis(new double[] {2, 3});
-		assertEquals(first.getPastOutputs().length, first.getOutputSize());
-		assertEquals(second.getPastOutputs().length, second.getOutputSize());
-		assertEquals(first.getPastOutputs(), fres);
-		assertEquals(second.getPastOutputs(), sres);
-		}
+	
 
 }

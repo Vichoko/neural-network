@@ -5,7 +5,6 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
-import network.utils;
 public class NeuralTest {
 	
 	Neuron and(){
@@ -162,13 +161,8 @@ public class NeuralTest {
 		assertTrue(tasaDesaciertos < 0.20);
 	}
 	
-	@Test
-	public void dotProductTest() throws Exception {
-		assertEquals(utils.dotProduct(new double[] {2,2},new double[] {1,1}), 
-				utils.dotProduct(new double[] {1,1},new double[] {2,2}),0.5);
-		assertEquals(utils.dotProduct(new double[] {2,2},new double[] {1,1}), 4, 0.5);
-				
+
 	}
 	
 
-}
+
