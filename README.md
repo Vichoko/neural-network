@@ -89,7 +89,7 @@ Tests:
 * utilsTest.java
 
 # Clasificar mensajes de Spam (Clasificacion de texto)
-Más información en ```spam.readme.md```
+* Para información especifica sobre mi experimento de **Clasificador de SMS de Spam** en [../src/spam/README.md](https://github.com/Vichoko/neural-network/blob/master/src/spam/README.md)
 
 # Clasificar venenocidad de hongos
-Más informacion en ```fungi.readme.md```
+* Para información especifica sobre mi experimento de **Clasificador de toxicidad de hongos** en [../src/fungi/README.md](https://github.com/Vichoko/neural-network/blob/master/src/fungi/README.md);
