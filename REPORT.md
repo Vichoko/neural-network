@@ -1,6 +1,5 @@
 # Reporte Tarea 1
-Vicente Oyanedel Muñoz
-18.933.042-1
+Vicente Oyanedel 
 https://github.com/Vichoko/neural-network
 
 ## Generalidades
