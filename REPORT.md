@@ -117,8 +117,11 @@ Con estos datos no se puede resolver el proeblema de clasificacion de una manera
 ### Ejecución
 
 Para ejecutar el experimento se debe ubicar el archivo de datos (../SMSSpamCollection) en el directorio del proyecto
+
 Luego ejecutar la clase spam.MainClass
+
 Se debería visualizar en consola el progreso del programa (pre-procesamiento, entrenamiento y metricas)
+
 Además quedará un archivo en el directorio con un gráfico del error cuadratico VS numero de epoch (../SPAM.png)
 
 
@@ -214,8 +217,11 @@ Como trabajo futuro queda evaluar con otros metodos para transformar atributos c
 
 ### Ejecución
 Para ejecutar el experimento se debe ubicar el archivo de datos (../parseCategoricalToNumerical) en el directorio del proyecto.
+
 Luego ejecutar la clase fungi.MainClass.
+
 Se debería visualizar en consola el progreso del programa (entrenamiento y metricas).
+
 Además quedará un archivo en el directorio con un gráfico del error cuadratico VS numero de epoch (../FUNGI.png).
 
 # Desarrollo

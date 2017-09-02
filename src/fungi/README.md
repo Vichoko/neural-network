@@ -70,15 +70,18 @@ El error cuadratico minimo que se consiguió fue de 2000.
 
 
 ## Conclusión
-La red neuroan clasifica con una efectividad del 50%, lo cual es como un clasificador que dice que no siempre. Esto es muy malo porque alguien podría comer un hongo toxico por culpa de este mal clasificador.
+La red neuronal clasifica con una efectividad del 50%, lo cual es como un clasificador que dice que no siempre. Esto es muy malo porque alguien podría comer un hongo toxico por culpa de este mal clasificador.
 
 Después de debugear muchas horas, se llegó a la conclusión que el problema radica en como se numerizaron los atributos categoricos. 
 Como trabajo futuro queda evaluar con otros metodos para transformar atributos categoricos a numericos.
 
 # Ejecución
 Para ejecutar el experimento se debe ubicar el archivo de datos (../parseCategoricalToNumerical) en el directorio del proyecto.
+
 Luego ejecutar la clase fungi.MainClass.
+
 Se debería visualizar en consola el progreso del programa (entrenamiento y metricas).
+
 Además quedará un archivo en el directorio con un gráfico del error cuadratico VS numero de epoch (../FUNGI.png).
 
 

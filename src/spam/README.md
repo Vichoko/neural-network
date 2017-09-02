@@ -70,7 +70,10 @@ C
 Con estos datos no se puede resolver el proeblema de clasificacion de una manera precisa. Lo cual se puede deber a la baja cantidad de datos que se tienen (6000 aproximadamente). Dado que al probar el desempeño de la red neuronal con los test, se puede comprobar que funciona correctamente.
 
 # Ejecuciónn
-Para ejecutar el experimento se debe ubicar el archivo de datos (../SMSSpamCollection) en el directorio del proyecto.Luego ejecutar la clase spam.MainClass.Se debería visualizar en consola el progreso del programa (pre-procesamiento, entrenamiento y metricas).Además quedará un archivo en el directorio con un gráfico del error cuadratico VS numero de epoch (../SPAM.png).
+Para ejecutar el experimento se debe ubicar el archivo de datos (../SMSSpamCollection) en el directorio del proyecto.
+Luego ejecutar la clase spam.MainClass.
+Se debería visualizar en consola el progreso del programa (pre-procesamiento, entrenamiento y metricas).
+Además quedará un archivo en el directorio con un gráfico del error cuadratico VS numero de epoch (../SPAM.png).
 
 # Referencias
 ## TF-IDF
