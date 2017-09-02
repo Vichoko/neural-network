@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
@@ -23,15 +24,68 @@ public class MainClass {
 
 	public static void main(String[] args) throws Exception {
 		String fileName = "SMSSpamCollection";
-		parseTSV(fileName, DEBUG);
+		parseTSV(fileName, utils.E_SamplingMethod.SUBSAMPLE, DEBUG);
 	}
 
-	static void parseTSV(String fileName, boolean debug) throws Exception {
-		List<String> rawClasses = new ArrayList<>(); // cara rawClass es un string
-		List<List<String>> rawTexts = new ArrayList<>(); // cada sms como una lista de terminos
+	/** 
+	 * Metodo especifico para cargar archivo TSV de la forma: <String clase>	<String SMS>.
+	 * Transforma el archivo de texto a datos que puede consumir la red neuronal (double[][] data y double[][] classes).
+	 * @param fileName Nombre del archivo de datos tsv
+	 * @param sampling Tipo de sampling que se quiere hacer sobre los datos desbalanceados.
+	 * @param debug Flag para imprimr en pantalla informacion extra.
+	 * @throws Exception
+	 */
+	static void parseTSV(String fileName, utils.E_SamplingMethod sampling, boolean debug) throws Exception {
 		TreeSet<String> dic = null; // diccionario de palabras posibles
 		double[][] classes = null;
 		double[][] data = null;
+		
+		Object[] dataNClassesNdic = loadTextData(data, classes, dic, fileName);
+		data = (double[][]) dataNClassesNdic[0];
+		classes = (double[][]) dataNClassesNdic[1];
+		dic = (TreeSet<String>) dataNClassesNdic[2];
+		
+		dataNClassesNdic = utils.sampleData(data, classes, sampling);
+		data = (double[][]) dataNClassesNdic[0];
+		classes = (double[][]) dataNClassesNdic[1];
+		
+		// Inicio de red neuronal
+		NeuralNetwork net = new NeuralNetwork(0.1);
+		net.newInputLayer(dic.size(), dic.size());
+		net.newHiddenLayer(15);
+		net.newHiddenLayer(1);
+		net.closeNetwork();
+
+		// 50% datos de entrenamiento, 50% datos de prueba
+		if (data.length != classes.length) {
+			throw new Exception("parseTSV :: data size != classes size.");
+		}
+		net.train(data,
+				classes, 
+				20, 
+				"SPAM");
+
+		double threshold = 0.4;
+		boolean verbose = true;
+		HashMap<String, Double> metricsData = utils.binaryMetrics(net,
+				data, 
+				classes,
+				threshold,
+				verbose);
+	}
+
+	/**
+	 * Carga datos de texto, le elimina stop-words, hace stemming. Codifica el texto en 'bag of words' (matriz de N x sizeOf(diccionario)), y le hace TF-IDF.
+	 * Ademas, guarda resultado en archivo temporal para evitar hacer preprocesamiento de nuevo; para luego poder cargarlo.
+	 * @param data Arreglo vacio donde quedara el 'bag of words' post-procesado.
+	 * @param classes Arreglo vacio donde quedaran las clases (binarias), luego de parsear el String de la clase raw.
+	 * @param dic TreeSet donde se almacenara el diccionario de palabras posibles.
+	 * @param fileName Nombre del archivo donde estan los datos.
+	 * @throws Exception
+	 */
+	static Object[] loadTextData(double[][] data, double[][] classes, TreeSet<String> dic, String fileName) throws Exception {
+		List<String> rawClasses = new ArrayList<>(); // cara rawClass es un string
+		List<List<String>> rawTexts = new ArrayList<>(); // cada sms como una lista de terminos
 		try {
 			ObjectInputStream inData = new ObjectInputStream(new FileInputStream(TFIDF_TEMPFILE_NAME + "_data"));
 			ObjectInputStream inClasses = new ObjectInputStream(new FileInputStream(TFIDF_TEMPFILE_NAME + "_classes"));
@@ -40,7 +94,7 @@ public class MainClass {
 			data = (double[][]) inData.readObject();
 			dic = (TreeSet<String>) inDic.readObject();
 			inClasses.close();
-			inDic.close();		
+			inDic.close();
 			inData.close();
 		} catch (FileNotFoundException e) {
 			// parse
@@ -50,7 +104,7 @@ public class MainClass {
 				// parsear lineas del archivo
 				String[] parsed = line.split("\\t", -1); // archivo 'tab separated'
 
-				if (debug) {
+				if (DEBUG) {
 					System.out.println("raw_class: " + parsed[0] + " text: " + parsed[1]);
 				}
 
@@ -63,6 +117,7 @@ public class MainClass {
 					term = term.replaceAll("[^a-zA-Z0-9]+", ""); // borrar caracteres especiales
 					if (!Stopwords.isStopword(term)) {
 						term = Stopwords.stemString(term);
+						term = term.toLowerCase();
 						tokens.add(term);
 					}
 				}
@@ -91,7 +146,7 @@ public class MainClass {
 				}
 			}
 
-			System.out.println("parseTSV :: Starting TF-IDF calculatio  for all texts.");
+			System.out.println("parseTSV :: Starting TF-IDF calculation for all texts.");
 			TFIDF calculator = new TFIDF();
 			data = new double[rawTexts.size()][dic.size()]; // bag of words
 			/**
@@ -102,20 +157,16 @@ public class MainClass {
 			int stepCounter = 0;
 			/**/
 			int dataIndex = 0;
-			ArrayList<Integer[]> debugAux = new ArrayList<>(); // TODO: borrar
 			for (List<String> rawText : rawTexts) {
 				// por cada sms
 				int termIndex = 0;
-				int debugCounter = 0; // TODO: borrar
 				for (String term : dic) {
 					// por cada elemento del diccionario posible
 					if (rawText.contains(term)) {
-						debugCounter++;
 						data[dataIndex][termIndex] = calculator.tfIdf(rawText, rawTexts, term);
 					}
 					termIndex++;
 				}
-				debugAux.add(new Integer[] { debugCounter, rawText.size() });
 				/**/
 				if (stepCounter++ >= step) {
 					stepCounter = 0;
@@ -127,42 +178,19 @@ public class MainClass {
 			// tengo X=data[][dic.len] y Y=classes[][1]
 
 			// fill in your array here
-			data = utils.normalizeAny(data);
+			// data = utils.normalizeAny(data);
 			ObjectOutputStream outData = new ObjectOutputStream(new FileOutputStream(TFIDF_TEMPFILE_NAME + "_data"));
 			ObjectOutputStream outClasses = new ObjectOutputStream(
 					new FileOutputStream(TFIDF_TEMPFILE_NAME + "_classes"));
-			ObjectOutputStream outDic = new ObjectOutputStream(
-					new FileOutputStream(TFIDF_TEMPFILE_NAME + "_dic"));
-			
+			ObjectOutputStream outDic = new ObjectOutputStream(new FileOutputStream(TFIDF_TEMPFILE_NAME + "_dic"));
+
 			outData.writeObject(data);
 			outClasses.writeObject(classes);
 			outDic.writeObject(dic);
 			outData.close();
 			outClasses.close();
 		}
-
-		// Inicio de red neuronal
-		NeuralNetwork net = new NeuralNetwork();
-		net.newInputLayer(dic.size(), dic.size());
-		net.newHiddenLayer(100);
-		net.newHiddenLayer(1);
-		net.closeNetwork();
-
-		// Se usa 70% para entrenar, 30% para validar.
-		if (data.length != classes.length) {
-			throw new Exception("parseTSV :: data size != classes size.");
-		}
-		net.train(Arrays.copyOfRange(data, 1, (int) Math.floor(data.length * 0.7)),
-				Arrays.copyOfRange(classes, 1, (int) Math.floor(classes.length * 0.7))
-				, 10
-				, "SPAM");
-
-		double threshold = 0.5;
-		boolean verbose = true;
-		HashMap<String, Double> metricsData = utils.binaryMetrics(net,
-				Arrays.copyOfRange(data, (int) Math.floor(data.length * 0.7) + 1, data.length - 1),
-				Arrays.copyOfRange(classes, (int) Math.floor(classes.length * 0.7) + 1, classes.length - 1), threshold,
-				verbose);
+		return new Object[] {data, classes, dic};
 	}
 
 }

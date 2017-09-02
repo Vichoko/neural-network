@@ -105,17 +105,25 @@ public class NeuralNetwork {
 					// Para cada input se calcula el error cuadratico medio para visualizar aprendizaje
 					sumError += Math.pow((expectedOutput[dataIndex][outputIndex]-realOutput[outputIndex]), 2);
 				}
-				errors[epochIndex] = sumError;
 				this.backPropagation(expectedOutput[dataIndex]);
 				this.updateWeights(input[dataIndex]);		
 			}
-			if (counter2 == 0 || counter++ >= epochsPart) {
-				System.out.println("Elapsed: " + (counter2++*10) + "Epoch: "+epochIndex+", error: "+sumError);
+			errors[epochIndex] = sumError;
+			// debug
+			if (counter2 == 0 || counter++ >= epochsPart || nEpochs < 100) {
+				System.out.println("Elapsed: " + (counter2++*10) + "%, Epoch: "+epochIndex+", error: "+sumError);
 				counter = 0;
+			}
+			if (epochIndex > 3 && false) {
+				if (errors[epochIndex - 1] == errors[epochIndex - 2] && errors[epochIndex - 1] == errors[epochIndex]) {
+					// si error no cambia en 3 ultimas epocas, probablemente no cambie mas.
+					System.out.println("train :: finishing train because of no-change in error.");
+					break;
+				}
 			}
 		}
 		
-		// do grahphics
+		// do plot to outfile
 		if (errorPlotName != null) {
 			double[] x = new double[errors.length];
 			for (int i = 0; i < x.length; i++)
