@@ -3,8 +3,10 @@
 ## Generalidades
 Este reporte hace referencia a sus diversas partes mediante hipervinculos. Dado que secciones más especificas están dentro del paquete del proyecto correspondiente.
 
-Para información sobre como usar la red neuronal, ejecutar sus pruebas, ejemplos y más [../README.md]().
-Para información especifica sobre mi experimento de Clasificador de SMS de Spam en [../src/spam/README.md]() y Clasificador de toxicidad de hongos en [../src/fungi/README.md]();
+
+* Para información sobre como usar la red neuronal, ejecutar sus pruebas, ejemplos y más [../README.md](https://github.com/Vichoko/neural-network/blob/master/README.md).
+* Para información especifica sobre mi experimento de Clasificador de SMS de Spam en [../src/spam/README.md](https://github.com/Vichoko/neural-network/blob/master/src/spam/README.md)
+* Para información especifica sobre mi experimento de Clasificador de toxicidad de hongos en [../src/fungi/README.md](https://github.com/Vichoko/neural-network/blob/master/src/fungi/README.md);
 
 ## Introducción
 Este proyecto consiste de la implementación de una red neuronal y pruebas de su funcionamiento.
