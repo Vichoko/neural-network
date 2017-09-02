@@ -5,9 +5,10 @@ En el contexto de la Tarea 1 del curso CC5114 del 2017, se presenta el [REPORTE]
 
 # Requerimientos
 * JUnit 4
-* Java 1.7+
+* JavaSE-1.7
 
 # Generalidades
+* Fue implementado en Eclipse 4.7.0 (Ubuntu 16.04).
 * Las neuronas tienen función de activación sigmoidea; se puede extender a otras funciones.
 * La red neuronal soporta vectores de entrada de tamaño fijo; el cual se determina en el constructor.
 * La red neuronal provee flexibilidad en la cantidad de capas y neuronas por capa.
