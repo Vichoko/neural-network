@@ -15,7 +15,7 @@ ham		k...i'm watching here:)
 ```
 
 ## Pre-procesamiento de Texto
-1. Transformar clases "ham" y "spam" a valores 0 y 1; respectivamente. Siendo 1, un sms spam y 0 uno no spam.
+1. Transformar clases "ham" y "spam" a valores 0 y 1; respectivamente.
 2. Transformar SMS (texto) a una 'bag of words' (Matriz de SizeOf(DataSet) x SizeOf(Diccionario)) de minimo tamaño posible.
 
 Esta parte del programa basta que se ejecute una vez, dado que el resultado del procesamiento queda guardado en 3 archivos temporales en el directorio del proyecto (../temp_tdidf_*). Si hay algun problema y se quiere forzar el recalculo de este proceso basta con eliminar estos 3 archivos temporales.

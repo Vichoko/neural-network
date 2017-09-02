@@ -1,5 +1,7 @@
 # neural-network
 Implementación de red neuronal escrita en Java; con documentación en Español.
+## Reporte
+En el contexto de la Tarea 1 del curso CC5114 del 2017, se presenta el [REPORTE](https://github.com/Vichoko/neural-network/blob/master/REPORT.md).
 
 # Requerimientos
 * JUnit 4

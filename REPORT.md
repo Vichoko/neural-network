@@ -4,29 +4,32 @@
 Este reporte hace referencia a sus diversas partes mediante hipervinculos. Dado que secciones más especificas están dentro del paquete del proyecto correspondiente.
 
 
-* Para información sobre como usar la red neuronal, ejecutar sus pruebas, ejemplos y más [../README.md](https://github.com/Vichoko/neural-network/blob/master/README.md).
-* Para información especifica sobre mi experimento de Clasificador de SMS de Spam en [../src/spam/README.md](https://github.com/Vichoko/neural-network/blob/master/src/spam/README.md)
-* Para información especifica sobre mi experimento de Clasificador de toxicidad de hongos en [../src/fungi/README.md](https://github.com/Vichoko/neural-network/blob/master/src/fungi/README.md);
+* Para información sobre **como usar la red neuronal, ejecutar sus pruebas, ejemplos** y más [../README.md](https://github.com/Vichoko/neural-network/blob/master/README.md).
+* Para información especifica sobre mi experimento de **Clasificador de SMS de Spam** en [../src/spam/README.md](https://github.com/Vichoko/neural-network/blob/master/src/spam/README.md)
+* Para información especifica sobre mi experimento de **Clasificador de toxicidad de hongos** en [../src/fungi/README.md](https://github.com/Vichoko/neural-network/blob/master/src/fungi/README.md);
 
 ## Introducción
 Este proyecto consiste de la implementación de una red neuronal y pruebas de su funcionamiento.
 
-La primera gran parte del proyecto consiste en la implementacion de la red, sus capas y las neuronas. Aun más importante es la batería de test adjunta con el proyecto, en la cual se entrena la red neuronal con diversos problemas conocidos y luego se mide su desempeño. Esta batería de tests deberia poder ejecutarse en tu copia del repositorio.
+La primera gran parte del proyecto consiste en la **implementacion de la red, sus capas y las neuronas**. Aun más importante es la batería de test adjunta con el proyecto, en la cual se entrena la red neuronal con diversos problemas conocidos y luego se mide su desempeño. Esta batería de tests deberia poder ejecutarse en tu copia del repositorio.
 
-La segunda parte corresponde a experimentos hechos con data-sets externos. En los cuales gran parte de la implementación corresponde  a:
+La segunda parte corresponde a **experimentos hechos con data-set externos**. En los cuales gran parte de la implementación corresponde a:
 1. Pre-procesamiento de los datos, para transformarlos al formato de entrada de la red. 
 2. La configuración de la red neuronal, para optimizar el aprendizaje mediante prueba y error.
 3. La captura de metricas de desempeño, multiples reiteraciones.
 4. Conclusiones acerca del problema, los datos y las metricas recibidas.
 
 ## Pruebas
-Las pruebas que no respectan a la red neuronal directamente son para comprobar el correcto funcionamiento de funciones auxilaires y partes mas pequeñas del sistema.
+Las pruebas que no respectan a la red neuronal directamente son para comprobar el correcto funcionamiento de funciones auxiliares y partes más pequeñas del sistema.
 
 Las pruebas de la red neuronal consiste en problemas simples de clasificacion binaria. Donde se predice con un solo output (1 o 0) y, además, pruebas que se predice con 2 output (Se interpreta segun el indice del valor más alto). **Al ejecutar las pruebas queda un grafico con el error medio VS numero de epoch, en el directorio del proyecto**.
-
+### Clasificador AND 
 ![AND](https://i.imgur.com/kezrOGg.png)
+### ClasificadOR
 ![OR](https://i.imgur.com/k5fTuwl.png)
+### Clasificador XOR
 ![XOR](https://i.imgur.com/QWKzQAQ.png)
+### Clasificador arriba/abajo de función lineal
 ![Arriba/Abajo de funcion lineal](https://i.imgur.com/93XYVjF.png)
 
 
@@ -48,7 +51,7 @@ ham		k...i'm watching here:)
 ```
 
 #### Pre-procesamiento de Texto
-1. Transformar clases "ham" y "spam" a valores 0 y 1; respectivamente. Siendo 1, un sms spam y 0 uno no spam.
+1. Transformar clases "ham" y "spam" a valores 0 y 1; respectivamente.
 2. Transformar SMS (texto) a una 'bag of words' (Matriz de SizeOf(DataSet) x SizeOf(Diccionario)) de minimo tamaño posible.
 
 Esta parte del programa basta que se ejecute una vez, dado que el resultado del procesamiento queda guardado en 3 archivos temporales en el directorio del proyecto (../temp_tdidf_*). Si hay algun problema y se quiere forzar el recalculo de este proceso basta con eliminar estos 3 archivos temporales.
@@ -232,6 +235,7 @@ Esto tiene relacion con el metodo de decenso estocastico del gradiente, donde el
 
 ## Does the order of the training data matter? 
 Si. En general se recomienda hacer un shuffle del dataset antes de entrenar.
+Más si se sabe que los datos tienen algun orden en el data-set; por ejemplo, si estan ordenados por clase. Esto puede inducir un sesgo en el aprendizaje, y afectar negativamente en las predicciones.
 
 ## What are the neurons that changes the most during the learning phase?
 Me imagino que las de la capa de input. Dado que, segun he leido, ellas son las que separan el problema; cuando el problema es linear-separable.
