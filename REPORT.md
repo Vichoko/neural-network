@@ -1,9 +1,10 @@
-# Reporte
+# Reporte Tarea 1
+Vicente Oyanedel Muñoz
+18.933.042-1
+https://github.com/Vichoko/neural-network
 
 ## Generalidades
-Este reporte hace referencia a sus diversas partes mediante hipervínculos. Dado que secciones más especificas están dentro del paquete del proyecto correspondiente.
-
-
+Este reporte incluye todo lo requerido. Para más información, puede encontrarla en los siguientes links:
 * Para información sobre **como usar la red neuronal, ejecutar sus pruebas, ejemplos** y más [../README.md](https://github.com/Vichoko/neural-network/blob/master/README.md).
 * Para información especifica sobre mi experimento de **Clasificador de SMS de Spam** en [../src/spam/README.md](https://github.com/Vichoko/neural-network/blob/master/src/spam/README.md)
 * Para información especifica sobre mi experimento de **Clasificador de toxicidad de hongos** en [../src/fungi/README.md](https://github.com/Vichoko/neural-network/blob/master/src/fungi/README.md);
@@ -11,7 +12,7 @@ Este reporte hace referencia a sus diversas partes mediante hipervínculos. Dado
 ## Introducción
 Este proyecto consiste de la implementación de una red neuronal y pruebas de su funcionamiento.
 
-La primera gran parte del proyecto consiste en la **implementación de la red, sus capas y las neuronas**. Aun más importante es la batería de test adjunta con el proyecto, en la cual se entrena la red neuronal con diversos problemas conocidos y luego se mide su desempeño. Esta batería de tests debería poder ejecutarse en tu copia del repositorio.
+La primera gran parte del proyecto consiste en la **implementación de la red, sus capas y las neuronas**. Aun más importante es la batería de tests adjunta con el proyecto; en la cual entrena la red neuronal con diversos problemas conocidos y luego se mide su desempeño. Esta batería de tests debería poder ejecutarse en su copia del repositorio.
 
 La segunda parte corresponde a **experimentos hechos con data-set externos**. En los cuales gran parte de la implementación corresponde a:
 1. Pre-procesamiento de los datos, para transformarlos al formato de entrada de la red. 
@@ -22,7 +23,8 @@ La segunda parte corresponde a **experimentos hechos con data-set externos**. En
 ## Pruebas
 Las pruebas que no respectan a la red neuronal directamente son para comprobar el correcto funcionamiento de funciones auxiliares y partes más pequeñas del sistema.
 
-Las pruebas de la red neuronal consiste en problemas simples de clasificación binaria. Donde se predice con un solo output (1 o 0) y, además, pruebas que se predice con 2 output (Se interpreta según el índice del valor más alto). **Al ejecutar las pruebas queda un gráfico con el error medio VS numero de epoch, en el directorio del proyecto**.
+Las pruebas de la red neuronal consiste en problemas simples de clasificación binaria. Donde se predice con un solo output (1 o 0) y, además, pruebas que se predice con 2 output (Se interpreta según el índice del valor más alto). Usted debería poder ejecutar las pruebas y comprobar la alta tasa de precisión que alcanza la red neuronal.
+**Al ejecutar las pruebas se guarda un gráfico con el error medio VS numero de epoch para cada clasificicación, en el directorio del proyecto**.
 ### Clasificador AND 
 ![AND](https://i.imgur.com/kezrOGg.png)
 ### ClasificadOR
@@ -56,7 +58,7 @@ ham		k...i'm watching here:)
 
 Esta parte del programa basta que se ejecute una vez, dado que el resultado del procesamiento queda guardado en 3 archivos temporales en el directorio del proyecto (../temp_tdidf_*). Si hay algún problema y se quiere forzar el recalculo de este proceso basta con eliminar estos 3 archivos temporales.
 
-Para lograr el punto 2 se hicieron varios procesos.
+Para acercarse al punto 2 se hicieron varios procesos:
 
 ##### Quitar Stop-words
 Se eliminaron de los SMS palabras que no tienen relevancia en el ingles. Por ejemplo, "a", "the", etc. 
@@ -111,7 +113,9 @@ El error cuadrático mínimo que se consiguió fue de 240.
 
 #### Conclusión
 
-Con estos datos no se puede resolver el problema de clasificación de una manera precisa. Lo cual se puede deber a la baja cantidad de datos que se tienen (6000 aproximadamente). Dado que al probar el desempeño de la red neuronal con los test, se puede comprobar que funciona correctamente
+Con estos datos no se puede resolver el problema de clasificación de una manera precisa. Lo cual se puede deber a la baja cantidad de datos que se tienen (6000 aproximadamente). Dado que al probar el desempeño de la red neuronal con los test, se puede comprobar que funciona correctamente.
+
+Además puede ser por el fuerte desbalance de clases.
 
 
 ### Ejecución
